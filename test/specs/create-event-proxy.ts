@@ -25,7 +25,9 @@ describe('createEventProxy()', () => {
   );
 
   before(() => {
-    this.createEventProxy = (options: { [key: string]: any } = {}) =>
+    this.createEventProxy = (options: {
+      [key: string]: any
+    } = {}): EventProxy =>
       createEventProxy(Object.assign({
         emitter: this.emitter,
         name: 'event-name'
@@ -255,5 +257,30 @@ tags', async () => {
     });
 
     expect(err).to.be.an('error');
+  });
+
+  it('default tags and data are exposed and can be modified', async () => {
+    const eventProxy = this.createEventProxy({
+      tags: ['a'],
+      data: {
+        a: 'b'
+      }
+    });
+    eventProxy.tags.push('b');
+    eventProxy.data.b = 'c';
+
+    const {
+      event
+    } = await emitEvent(eventProxy, ['c'], {
+      c: 'd'
+    });
+
+    assertEventSchema(event);
+    expect(event.tags).to.deep.equal(['a', 'b', 'c']);
+    expect(event.data).to.deep.equal({
+      a: 'b',
+      b: 'c',
+      c: 'd'
+    });
   });
 });
