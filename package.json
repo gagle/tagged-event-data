@@ -1,0 +1,75 @@
+{
+  "name": "tagged-event-proxy",
+  "version": "0.1.0",
+  "description": "Encapsulates tagged event data in a well-defined schema",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "module": "es/index.js",
+  "scripts": {
+    "prebuild": "npm run clean:build",
+    "build": "gulp build",
+    "clean": "npm run clean:build && npm run clean:coverage",
+    "clean:build": "gulp clean",
+    "clean:coverage": "rimraf .nyc_output coverage",
+    "precoverage": "npm run clean:coverage",
+    "coverage": "nyc npm run test:unit:ts && npm run coverage:report",
+    "coverage:report": "nyc report --reporter text-lcov",
+    "postcoverage:report": "rimraf .nyc_output",
+    "lint": "tslint src/**/*.ts test/**/*.ts",
+    "pretest": "npm run build",
+    "test": "npm run lint && npm run coverage",
+    "test:unit": "mocha test/specs/**/*.js",
+    "test:unit:ts": "mocha test/specs/**/*.ts --require ts-node/register",
+    "prepublish": "not-in-install && npm test || in-install",
+    "prepush": "npm test"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gagle/tagged-event-proxy.git"
+  },
+  "engines": {
+    "node": ">=6.9"
+  },
+  "author": "Gabriel Llamas",
+  "nyc": {
+    "check-coverage": true,
+    "lines": 100,
+    "statements": 100,
+    "functions": 100,
+    "branches": 100,
+    "include": [
+      "src/**/*.ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "extension": [
+      ".ts"
+    ]
+  },
+  "devDependencies": {
+    "@types/chai": "3.5.1",
+    "@types/hoek": "4.1.3",
+    "@types/mocha": "2.2.41",
+    "@types/node": "7.0.13",
+    "chai": "3.5.0",
+    "codecov": "2.1.0",
+    "coveralls": "2.13.0",
+    "del": "2.2.2",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-sourcemaps": "2.6.0",
+    "gulp-typescript": "3.1.6",
+    "husky": "0.13.3",
+    "in-publish": "2.0.0",
+    "lint-staged": "3.4.0",
+    "mocha": "3.2.0",
+    "rimraf": "2.6.1",
+    "ts-node": "3.0.2",
+    "tslint": "5.1.0",
+    "typescript": "2.2.2"
+  },
+  "dependencies": {
+    "hoek": "4.1.1"
+  }
+}

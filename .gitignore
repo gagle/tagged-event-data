@@ -1,0 +1,10 @@
+.nyc_output
+coverage
+es
+lib
+node_modules
+npm-debug.log*
+src/**/*.js*
+src/**/*.d.ts
+test/**/*.js*
+test/**/*.d.ts
