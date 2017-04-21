@@ -13,7 +13,7 @@
     "clean:coverage": "rimraf .nyc_output coverage",
     "precoverage": "npm run clean:coverage",
     "coverage": "nyc npm run test:unit:ts && npm run coverage:report",
-    "coverage:report": "nyc report --reporter text-lcov",
+    "coverage:report": "nyc report --reporter lcov",
     "postcoverage:report": "rimraf .nyc_output",
     "lint": "tslint src/**/*.ts test/**/*.ts",
     "pretest": "npm run build",
