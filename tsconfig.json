@@ -1,14 +1,12 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "inlineSources": true,
     "lib": ["es2015", "es2016", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "removeComments": true,
-    "sourceMap": true,
     "suppressImplicitAnyIndexErrors": false,
     "target": "es2015",
     "typeRoots": [
