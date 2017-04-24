@@ -1,6 +1,6 @@
 {
   "name": "tagged-event-proxy",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Encapsulates tagged event data in a well-defined schema",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
