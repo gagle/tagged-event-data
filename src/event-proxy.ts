@@ -44,16 +44,32 @@ export type EventMessage = string | EventTimestamp;
 export type EventTimestamp = Date;
 
 export interface EventProxy {
-  (tags: EventTags, data?: EventData, message?: EventMessage,
+  (tags?: EventTags, data?: EventData, message?: EventMessage,
     timestamp?: EventTimestamp): void;
   tags: string[];
   data: StringKeyedObject<any>;
   child: (options: EventProxyChildOptions) => EventProxy;
 }
 
-export async function normalizeEvent(tags: EventTags, data?: EventData,
+export async function normalizeEvent(tags?: EventTags, data?: EventData,
   message?: EventMessage, timestamp?: EventTimestamp) : Promise<Event> {
-  const args = [...arguments];
+  const args = [...arguments]
+  const defaultTags: string[] = [];
+  const defaultData: StringKeyedObject<any> = {};
+  const defaultMessage = '';
+  const defaultTimestamp = new Date();
+
+  const argsUndefined = args.filter((arg: any) => arg !== undefined);
+
+  if (!argsUndefined.length) {
+    return {
+      tags: defaultTags,
+      data: defaultData,
+      message: defaultMessage,
+      timestamp: defaultTimestamp
+    };
+  }
+
   let otherType;
 
   if (Array.isArray(args[0])) {
@@ -95,26 +111,26 @@ export async function normalizeEvent(tags: EventTags, data?: EventData,
   }
 
   if (!Array.isArray(tags)) {
-    tags = [];
+    tags = defaultTags;
   }
 
   if (data !== null && typeof data !== 'function' &&
     (typeof data !== 'object' || data instanceof Date)) {
-    data = {};
+    data = defaultData;
   }
 
   if (typeof message !== 'string' && !otherType) {
-    message = '';
+    message = defaultMessage;
   }
 
   if (!(timestamp instanceof Date)) {
-    timestamp = new Date();
+    timestamp = defaultTimestamp;
   }
 
   const event = {
     tags,
-    message,
     data,
+    message,
     timestamp
   } as Event;
 

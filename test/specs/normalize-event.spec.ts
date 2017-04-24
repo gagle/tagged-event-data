@@ -1,6 +1,12 @@
 import { expect } from 'chai';
 import { normalizeEvent, Event } from '../../src';
 import assertEventSchema from '../utils/assertEventSchema';
+import {
+  assertDefaultTags,
+  assertDefaultData,
+  assertDefaultMessage,
+  assertDefaultTimestamp
+} from '../utils/defaults';
 
 describe('normalizeEvent()', () => {
   const assertErrorSchema = (event: Event) => {
@@ -9,21 +15,20 @@ describe('normalizeEvent()', () => {
     expect(event).to.have.property('tags').that.is.an('array');
   };
 
-  const assertDefaultTags = (event: Event) =>
-    expect(event.tags).to.be.empty;
-  const assertDefaultData = (event: Event) =>
-    expect(event.data).to.be.an('object').and.to.be.empty;
-  const assertDefaultMessage = (event: Event) =>
-    expect(event.message).to.be.an('string').and.to.be.empty;
-  const assertDefaultTimestamp = (event: Event) => {
-    expect(event.timestamp).to.be.a('date');
-    expect(event.timestamp.getTime() <= Date.now()).to.be.true;
-  };
-
   it('returns a promise', async () => {
     const promise = normalizeEvent([]);
 
     expect(promise).to.be.a('promise');
+  });
+
+  it('accepts empty arguments', async () => {
+    const event = await normalizeEvent();
+
+    assertEventSchema(event);
+    assertDefaultTags(event);
+    assertDefaultData(event);
+    assertDefaultMessage(event);
+    assertDefaultTimestamp(event);
   });
 
   it('accepts tags', async () => {

@@ -1,6 +1,12 @@
 import { EventEmitter } from 'events';
 import { expect } from 'chai';
 import assertEventSchema from '../utils/assertEventSchema';
+import {
+  assertDefaultTags,
+  assertDefaultData,
+  assertDefaultMessage,
+  assertDefaultTimestamp
+} from '../utils/defaults';
 import { createEventProxy, Event, EventProxy, interfaces } from '../../src';
 
 describe('createEventProxy()', () => {
@@ -282,5 +288,19 @@ tags', async () => {
       b: 'c',
       c: 'd'
     });
+  });
+
+  it('accepts empty arguments', async () => {
+    const eventProxy = this.createEventProxy();
+
+    const {
+      event
+    } = await emitEvent(eventProxy);
+
+    assertEventSchema(event);
+    assertDefaultTags(event);
+    assertDefaultData(event);
+    assertDefaultMessage(event);
+    assertDefaultTimestamp(event);
   });
 });
