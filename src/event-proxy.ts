@@ -53,7 +53,7 @@ export interface EventProxy {
 
 export async function normalizeEvent(tags?: EventTags, data?: EventData,
   message?: EventMessage, timestamp?: EventTimestamp) : Promise<Event> {
-  const args = [...arguments]
+  const args = [...arguments];
   const defaultTags: string[] = [];
   const defaultData: StringKeyedObject<any> = {};
   const defaultMessage = '';
