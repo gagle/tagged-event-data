@@ -111,7 +111,7 @@ console.log(newEvent.tags); // ['tag1']
 console.log(newEvent.data); // { foo: 'bar' }
 ```
 
-### normalizeEvent(tags?: EventTags, data?: EventData, message?: EventMessage, timestamp?: EventTimestamp) : Promise<Event>
+### normalizeEvent(tags?: EventTags, data?: EventData, message?: EventMessage, timestamp?: EventTimestamp) : Promise\<Event\>
 
 ```typescript
 type EventTags = string[] | EventData;
