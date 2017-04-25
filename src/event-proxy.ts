@@ -12,21 +12,21 @@ export interface Event {
 }
 
 export interface CreateEventProxyOptions {
-  emitter: EventEmitter;
+  emitter: EventEmitter | EventEmitter[];
   name: string;
   tags?: string[];
   data?: StringKeyedObject<any>;
 }
 
 interface NewProxyOptions {
-  emitter: EventEmitter;
+  emitters: EventEmitter[];
   name: string;
   defaultTags?: string[];
   defaultData?: StringKeyedObject<any>;
 }
 
 interface NewChildOptions {
-  emitter: EventEmitter;
+  emitters: EventEmitter[];
   name: string;
   parentTags?: string[];
   parentData?: StringKeyedObject<any>;
@@ -136,15 +136,15 @@ export async function normalizeEvent(tags?: EventTags, data?: EventData,
 
   if (data instanceof Error) {
     event.error = data;
-    event.data = {};
-    event.message = event.message || event.error.message || '';
+    event.data = defaultData;
+    event.message = event.message || event.error.message || defaultMessage;
   }
 
   return event;
 }
 
 const newProxy = ({
-  emitter,
+  emitters,
   name,
   defaultTags,
   defaultData
@@ -156,26 +156,31 @@ const newProxy = ({
       try {
         event = await normalizeEvent(tags, data, message, timestamp);
       } catch (err) {
-        emitter.emit('error', err);
+        for (const emitter of emitters) {
+          emitter.emit('error', err);
+        }
         return;
       }
       event.tags.unshift(...defaultTags);
       // Remove duplicate and empty string tags
       event.tags = hoek.unique(event.tags).filter((tag: string) => !!tag);
       event.data = hoek.applyToDefaults(defaultData, event.data, true);
-      emitter.emit(name, event, hoek.mapToObject(event.tags));
+      const tagsObj = hoek.mapToObject(event.tags);
+      for (const emitter of emitters) {
+        emitter.emit(name, event, tagsObj);
+      }
     })();
   };
 
 const newChild = ({
-  emitter,
+  emitters,
   name,
   parentTags,
   parentData
 }: NewChildOptions) =>
   ({ tags = [], data = {} }: EventProxyChildOptions = {}) : EventProxy =>
   createEventProxy({
-    emitter,
+    emitter: emitters,
     name,
     tags: hoek.unique([...parentTags, ...tags]),
     data: hoek.applyToDefaults(parentData, data)
@@ -187,15 +192,17 @@ export function createEventProxy({
   tags = [],
   data = {}
 }: CreateEventProxyOptions): EventProxy {
+  const emitters = [].concat(emitter);
+
   const proxy = newProxy({
-    emitter,
+    emitters,
     name,
     defaultTags: tags,
     defaultData: data
   });
 
   const child = newChild({
-    emitter,
+    emitters,
     name,
     parentTags: tags,
     parentData: data

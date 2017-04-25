@@ -303,4 +303,100 @@ tags', async () => {
     assertDefaultMessage(event);
     assertDefaultTimestamp(event);
   });
+
+  it('event instances are reused when multiple event emitters are attached',
+    async () => {
+    const emitter1 = new EventEmitter();
+    const emitter2 = new EventEmitter();
+    const eventProxy = createEventProxy({
+      emitter: [emitter1, emitter2],
+      name: 'event-name'
+    });
+
+    const promises = [
+      new Promise<{
+        event: Event,
+        tags: interfaces.StringKeyedObject<boolean>
+      }>((resolve, reject) => {
+        emitter1
+          .on('error', reject)
+          .on('event-name', (
+            event: Event,
+            tags: interfaces.StringKeyedObject<boolean>
+          ) => {
+            resolve({
+              event,
+              tags
+            });
+          });
+      }),
+      new Promise<{
+        event: Event,
+        tags: interfaces.StringKeyedObject<boolean>
+      }>((resolve, reject) => {
+        emitter2
+          .on('error', reject)
+          .on('event-name', (
+            event: Event,
+            tags: interfaces.StringKeyedObject<boolean>
+          ) => {
+            resolve({
+              event,
+              tags
+            });
+          });
+      })
+    ];
+
+    eventProxy();
+
+    const results = await Promise.all(promises);
+
+    expect(results[0].event).to.be.equal(results[1].event);
+    expect(results[0].tags).to.be.equal(results[1].tags);
+  });
+
+  it('error instances are reused when multiple event emitters are attached',
+    async () => {
+    const emitter1 = new EventEmitter();
+    const emitter2 = new EventEmitter();
+    const eventProxy = createEventProxy({
+      emitter: [emitter1, emitter2],
+      name: 'event-name'
+    });
+    const promises = [
+      new Promise<Error>((resolve, reject) => {
+        emitter1
+          .on('error', (err: Error) => {
+            resolve(err);
+          })
+          .on('event-name', (
+            event: Event,
+            tags: interfaces.StringKeyedObject<boolean>
+          ) => {
+            reject(new Error('should fail with an error'));
+          });
+      }),
+      new Promise<Error>((resolve, reject) => {
+        emitter2
+          .on('error', (err: Error) => {
+            resolve(err);
+          })
+          .on('event-name', (
+            event: Event,
+            tags: interfaces.StringKeyedObject<boolean>
+          ) => {
+            reject(new Error('should fail with an error'));
+          });
+      })
+    ];
+
+    eventProxy(() => {
+      throw new Error();
+    });
+
+    const results = await Promise.all(promises);
+
+    expect(results[0]).to.be.equal(results[1]);
+  });
 });

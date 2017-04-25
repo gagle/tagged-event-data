@@ -9,7 +9,7 @@ $ npm install tagged-event-proxy
 
 At some point an app need to generate events. With this module you can emit events with a normalized json structure so it's easy to consume them using a flexible function signature that can adapt to your needs. With the ability to add metadata to the event's data, we ensure that the event is always fully descriptive.
 
-A logging system may be implemented on top of this utility, like Hapijs. Tagged events are far more expressive, standard and useful than simple log lines.
+A logging system may be implemented on top of this utility, like [Hapi event logs](https://hapijs.com/tutorials/logging). Tagged events are far more expressive, standard and useful than simple log lines.
 
 ```typescript
 import { EventEmitter } from 'events';
@@ -44,18 +44,20 @@ emitter.on('log',
 newEvent(['info'], 'hello world');
 ```
 
+The reason why the event proxy does not inherit from an `EventEmitter` is to ease the event forwarding to a single `EventEmitter`, you decide where you want to attach the event proxy. Typically you have multiple event origins, for instance server events and request-specific events. Maybe you want to send metrics to a backend or you want to track any kind of business event. By decoupling the emission of the events you can create a single `EventEmitter` that will receive all kind of events, you can centralize all your application events.
+
 ### createEventProxy(options: CreateEventProxyOptions): EventProxy
 
 Options: 
 
-- __emitter__ - _EventEmitter_ Object that will receive events with name `<name>` and `error`.
+- __emitter__ - _EventEmitter | EventEmitter[]_ `EventEmitter` or array of `EventEmitter` instances that will receive events with name `<name>` and `error`.
 - __name__ _string_ Name of the event.
 - __tags__ _string[] (optional)_ Default tags to include with the event.
 - __data__ _object (optional)_ Default data to include with the event. The data must be a string-keyed object, eg. `{ foo: 'bar' }`.
 
 ```typeScript
 interface CreateEventProxyOptions {
-  emitter: EventEmitter;
+  emitter: EventEmitter | EventEmitter[];
   name: string;
   tags?: string[];
   data?: StringKeyedObject<any>;
@@ -85,7 +87,7 @@ interface EventProxy {
 }
 ```
 
-There are a lot of ways to emit an event, some examples are:
+There are a lot of ways to emit an event.
 
 ```typescript
 const emitter = new EventEmitter();
@@ -104,9 +106,18 @@ newEvent('message');
 newEvent(['tag2', 'tag3'], { bar: 'foo' });
 newEvent({ bar: 'foo' }, 'message');
 newEvent();
-...
+```
 
-// Tags and data are accessible from outside just in case they need to be changed
+The data parameter can be also a sync/async function, useful to provide a value by using a closure. Errors thrown from inside the function are catched and emitted as `error`.
+
+```typescript
+newEvent(() => ({ a: 'b'}));
+newEvent(async () => ({ a: 'b'}));
+```
+
+Tags and data are accessible from outside just in case they need to be changed.
+
+```typescript
 console.log(newEvent.tags); // ['tag1']
 console.log(newEvent.data); // { foo: 'bar' }
 ```
