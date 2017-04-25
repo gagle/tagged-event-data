@@ -7,7 +7,8 @@ const del = require('del');
 
 gulp.task('clean', () => del([
   'lib',
-  'es'
+  'es',
+  'npm-debug.log*'
 ]));
 
 gulp.task('build:es', () =>
