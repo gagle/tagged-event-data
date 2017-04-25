@@ -12,11 +12,12 @@ describe('normalizeEvent()', () => {
   const assertErrorSchema = (event: Event) => {
     expect(event).to.have.all.keys('tags', 'data', 'message', 'timestamp',
       'error');
+    expect(event).to.have.property('error').that.is.an('error');
     expect(event).to.have.property('tags').that.is.an('array');
   };
 
   it('returns a promise', async () => {
-    const promise = normalizeEvent([]);
+    const promise = normalizeEvent();
 
     expect(promise).to.be.a('promise');
   });
@@ -190,40 +191,6 @@ describe('normalizeEvent()', () => {
     expect(event.timestamp).to.equal(date);
   });
 
-  it('accepts an error as a special case of data', async () => {
-    const error = new Error();
-    const event = await normalizeEvent(error);
-
-    assertErrorSchema(event);
-    expect(event.error).to.equals(error);
-
-    assertDefaultTags(event);
-    assertDefaultData(event);
-    assertDefaultMessage(event);
-    assertDefaultTimestamp(event);
-  });
-
-  it('copies the error message to the message field, otherwise the message \
-field is not modified', async () => {
-    let event;
-
-    event = await normalizeEvent(new Error());
-    assertErrorSchema(event);
-    expect(event.message).to.equal('');
-
-    event = await normalizeEvent(new Error(), 'a');
-    assertErrorSchema(event);
-    expect(event.message).to.equal('a');
-
-    event = await normalizeEvent(new Error('a'));
-    assertErrorSchema(event);
-    expect(event.message).to.equal('a');
-
-    event = await normalizeEvent(new Error('a'), 'b');
-    assertErrorSchema(event);
-    expect(event.message).to.equal('b');
-  });
-
   it('accepts any other type of data (try/catch) and is stored in the message \
 field', async () => {
     let event;
@@ -312,5 +279,40 @@ field', async () => {
     });
 
     expect(err).to.be.an('error');
+  });
+
+  it('accepts error', async () => {
+    let err = new Error();
+    let event = await normalizeEvent(err);
+
+    assertErrorSchema(event);
+    expect(event.error).to.be.equal(err);
+    assertDefaultTags(event);
+    assertDefaultData(event);
+    assertDefaultMessage(event);
+    assertDefaultTimestamp(event);
+
+    err = new Error('a');
+    event = await normalizeEvent(err);
+
+    assertErrorSchema(event);
+    expect(event.error).to.be.equal(err);
+    assertDefaultTags(event);
+    assertDefaultData(event);
+    assertDefaultMessage(event);
+    assertDefaultTimestamp(event);
+  });
+
+  it('accepts error,message (error.message is not used as message)',
+    async () => {
+    const err = new Error('b');
+    const event = await normalizeEvent(err, 'a');
+
+    assertErrorSchema(event);
+    expect(event.error).to.be.equal(err);
+    assertDefaultTags(event);
+    assertDefaultData(event);
+    expect(event.message).to.be.equal('a');
+    assertDefaultTimestamp(event);
   });
 });

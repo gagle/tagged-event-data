@@ -37,23 +37,26 @@ export interface EventProxyChildOptions {
   data?: StringKeyedObject<any>;
 }
 
+export type EventError = Error | EventTags;
 export type EventTags = string[] | EventData;
-export type EventData = Error | StringKeyedObject<any> |
+export type EventData = StringKeyedObject<any> |
   (() => Promise<StringKeyedObject<any>>) | EventMessage;
 export type EventMessage = string | EventTimestamp;
 export type EventTimestamp = Date;
 
 export interface EventProxy {
-  (tags?: EventTags, data?: EventData, message?: EventMessage,
-    timestamp?: EventTimestamp): void;
+  (error?: EventError, tags?: EventTags, data?: EventData,
+    message?: EventMessage, timestamp?: EventTimestamp): void;
   tags: string[];
   data: StringKeyedObject<any>;
   child: (options: EventProxyChildOptions) => EventProxy;
 }
 
-export async function normalizeEvent(tags?: EventTags, data?: EventData,
-  message?: EventMessage, timestamp?: EventTimestamp) : Promise<Event> {
+export async function normalizeEvent(error?: EventError, tags?: EventTags,
+  data?: EventData, message?: EventMessage, timestamp?: EventTimestamp)
+  : Promise<Event> {
   const args = [...arguments];
+  const defaultError: Error = null;
   const defaultTags: string[] = [];
   const defaultData: StringKeyedObject<any> = {};
   const defaultMessage = '';
@@ -71,6 +74,10 @@ export async function normalizeEvent(tags?: EventTags, data?: EventData,
   }
 
   let otherType;
+
+  if (args[0] instanceof Error) {
+    error = args.shift();
+  }
 
   if (Array.isArray(args[0])) {
     tags = args.shift();
@@ -110,6 +117,10 @@ export async function normalizeEvent(tags?: EventTags, data?: EventData,
     message = `${args.shift()}`;
   }
 
+  if (!(error instanceof Error)) {
+    error = defaultError;
+  }
+
   if (!Array.isArray(tags)) {
     tags = defaultTags;
   }
@@ -134,10 +145,8 @@ export async function normalizeEvent(tags?: EventTags, data?: EventData,
     timestamp
   } as Event;
 
-  if (data instanceof Error) {
-    event.error = data;
-    event.data = defaultData;
-    event.message = event.message || event.error.message || defaultMessage;
+  if (error) {
+    event.error = error as Error;
   }
 
   return event;
@@ -149,12 +158,12 @@ const newProxy = ({
   defaultTags,
   defaultData
 }: NewProxyOptions) =>
-  (tags: EventTags, data?: EventData, message?: EventMessage,
-  timestamp?: EventTimestamp): void => {
+  (error?: EventError, tags?: EventTags, data?: EventData,
+  message?: EventMessage, timestamp?: EventTimestamp): void => {
     (async () => {
       let event;
       try {
-        event = await normalizeEvent(tags, data, message, timestamp);
+        event = await normalizeEvent(error, tags, data, message, timestamp);
       } catch (err) {
         for (const emitter of emitters) {
           emitter.emit('error', err);
