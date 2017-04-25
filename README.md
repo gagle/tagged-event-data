@@ -74,6 +74,7 @@ interface EventProxyChildOptions {
   data?: StringKeyedObject<any>;
 }
 
+type EventError = Error | EventTags;
 type EventTags = string[] | EventData;
 type EventData = Error | StringKeyedObject<any> |
   (() => Promise<StringKeyedObject<any>>) | EventMessage;
@@ -124,17 +125,9 @@ console.log(newEvent.tags); // ['tag1']
 console.log(newEvent.data); // { foo: 'bar' }
 ```
 
-### normalizeEvent(tags?: EventTags, data?: EventData, message?: EventMessage, timestamp?: EventTimestamp) : Promise\<Event\>
+### normalizeEvent(error?: EventError, tags?: EventTags, data?: EventData, message?: EventMessage, timestamp?: EventTimestamp) : Promise\<Event\>
 
-```typescript
-type EventTags = string[] | EventData;
-type EventData = Error | StringKeyedObject<any> |
-  (() => Promise<StringKeyedObject<any>>) | EventMessage;
-type EventMessage = string | EventTimestamp;
-type EventTimestamp = Date;
-```
-
-The function that normalizes the event calls.
+The function that normalizes the event calls. Takes the same parameters as the event proxy function.
 
 ## Childs
 
