@@ -191,8 +191,8 @@ describe('normalizeEvent()', () => {
     expect(event.timestamp).to.equal(date);
   });
 
-  it('accepts any other type of data (try/catch) and is stored in the message \
-field', async () => {
+  it('accepts any other type of data (try/catch) and is stored in error field',
+    async () => {
     let event;
 
     try {
@@ -201,10 +201,10 @@ field', async () => {
       event = await normalizeEvent(err);
     }
 
-    assertEventSchema(event);
+    assertErrorSchema(event);
     assertDefaultTags(event);
     assertDefaultData(event);
-    expect(event.message).to.equal('123');
+    assertDefaultMessage(event);
     assertDefaultTimestamp(event);
 
     try {
@@ -213,10 +213,10 @@ field', async () => {
       event = await normalizeEvent(err);
     }
 
-    assertEventSchema(event);
+    assertErrorSchema(event);
     assertDefaultTags(event);
     assertDefaultData(event);
-    expect(event.message).to.equal('0');
+    assertDefaultMessage(event);
     assertDefaultTimestamp(event);
   });
 

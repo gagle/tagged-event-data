@@ -73,8 +73,6 @@ export async function normalizeEvent(error?: EventError, tags?: EventTags,
     };
   }
 
-  let otherType;
-
   if (args[0] instanceof Error) {
     error = args.shift();
   }
@@ -108,13 +106,12 @@ export async function normalizeEvent(error?: EventError, tags?: EventTags,
     // try {
     //   throw 123;
     // } catch (err) {
-    //   app.log(err);
+    //   eventProxy(err);
     // }
     //
-    // Let's put this uncontrolled data in the 'message' field
-    //
-    otherType = true;
-    message = `${args.shift()}`;
+    // Let's store this unexpected data in the 'error' field.
+    const unexpectedArg = args.shift();
+    error = new Error(`unexpected argument: ${unexpectedArg}`);
   }
 
   if (!(error instanceof Error)) {
@@ -130,7 +127,7 @@ export async function normalizeEvent(error?: EventError, tags?: EventTags,
     data = defaultData;
   }
 
-  if (typeof message !== 'string' && !otherType) {
+  if (typeof message !== 'string') {
     message = defaultMessage;
   }
 

@@ -184,3 +184,52 @@ event3();
   timestamp: 2017-04-24T15:56:33.913Z }
 */
 ```
+
+## Errors
+
+The first parameter of the event proxy function is an error. This allows you to easily track errors without caring about the other parameters because all of them are optional. A new `error` field is added to the event with this error.
+
+```typescript
+const emitter = new EventEmitter();
+const newEvent = createEventProxy({
+  emitter,
+  name: 'log',
+  tags: ['tag1']
+});
+
+try {
+  throw new Error('whoops!');
+} catch (err) {
+  newEvent(err);
+  /*
+  { tags: [ 'tag1' ],
+  data: {},
+  message: '',
+  timestamp: 2017-04-25T12:51:37.043Z,
+  error:
+   Error: whoops!
+       at Object.<anonymous> ...
+       ... }
+  */
+}
+```
+
+As you may know, any kind of data can be thrown using the `throw` keyword, this means that any potential unexpected type of parameter can be passed to the function. This situation is also controlled and any unexpected type is treated as an `Error`.
+
+```typescript
+try {
+  throw 123;
+} catch (err) {
+  newEvent(err);
+  /*
+  { tags: [ 'tag1' ],
+  data: {},
+  message: '',
+  timestamp: 2017-04-25T12:51:37.043Z,
+  error:
+   Error: unexpected argument: 123
+       at Object.<anonymous> ...
+       ... }
+  */
+}
+```
