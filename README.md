@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/gagle/tagged-event-proxy.svg?branch=master)](https://travis-ci.org/gagle/tagged-event-proxy)
 [![Coverage Status](https://coveralls.io/repos/github/gagle/tagged-event-proxy/badge.svg?branch=master)](https://coveralls.io/github/gagle/tagged-event-proxy?branch=master)
+[![npm](https://img.shields.io/npm/dm/tagged-event-proxy.svg)](https://www.npmjs.com/package/tagged-event-proxy)
+[![David](https://img.shields.io/david/gagle/tagged-event-proxy.svg)](https://david-dm.org/gagle/tagged-event-proxy)
 
 ```bash
 $ npm install tagged-event-proxy 
