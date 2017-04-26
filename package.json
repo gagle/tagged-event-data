@@ -18,7 +18,7 @@
     "test": "npm run lint && npm run coverage",
     "test:unit:ci": "mocha test/specs/**/*.js",
     "pretest:unit": "npm run clean:build",
-    "test:unit": "mocha test/specs/**/*.ts --require ts-node/register",
+    "test:unit": "mocha test/specs/**/*.ts --compilers ts:ts-node/register",
     "pretest:ci": "npm run build",
     "test:ci": "npm run lint && npm run test:unit:ci && npm run coverage",
     "prepublish": "not-in-install && npm test || in-install",
