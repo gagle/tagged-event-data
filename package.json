@@ -22,9 +22,7 @@
     "pretest:ci": "npm run build",
     "test:ci": "npm run lint && npm run test:unit:ci && npm run coverage",
     "prepublish": "not-in-install && npm test || in-install",
-    "postpublish": "not-in-install && npm run clean || in-install",
-    "prepush": "npm test",
-    "postpush": "npm run clean"
+    "prepush": "npm test"
   },
   "license": "MIT",
   "repository": {
