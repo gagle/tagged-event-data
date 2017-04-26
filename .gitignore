@@ -4,3 +4,5 @@ es
 lib
 node_modules
 npm-debug.log*
+src/**/*.js
+test/**/*.js
