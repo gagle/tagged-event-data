@@ -9,7 +9,7 @@
 $ npm install tagged-event-proxy 
 ```
 
-At some point an app need to generate events. With this module you can emit events with a normalized json structure so it's easy to consume them using a flexible function signature that can adapt to your needs. With the ability to add metadata to the event's data, we ensure that the event is always fully descriptive.
+At some point an app needs to generate events. With this module you can emit events with a consistent json schema to consume them easily using a flexible function signature that can adapt to your needs. With the ability to add metadata to the event, we ensure that the event is always fully-descriptive.
 
 A logging system may be implemented on top of this utility, like [Hapi event logs](https://hapijs.com/tutorials/logging). Tagged events are far more expressive, standard and useful than simple log lines.
 
