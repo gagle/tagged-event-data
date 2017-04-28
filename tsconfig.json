@@ -2,11 +2,9 @@
   "compilerOptions": {
     "lib": ["es2015", "es2016", "dom"],
     "module": "commonjs",
-    "moduleResolution": "node",
-    "noImplicitAny": true,
     "noUnusedLocals": true,
     "removeComments": true,
-    "suppressImplicitAnyIndexErrors": false,
+    "strict": true,
     "target": "es2015",
     "typeRoots": [
       "node_modules/@types"
