@@ -6,22 +6,10 @@ const del = require('del');
 
 gulp.task('clean', () => del([
   'lib',
-  'es',
   'npm-debug.log*',
   'src/**/*.js',
   'test/**/*.js'
 ]));
-
-gulp.task('build:es', () =>
-  gulp.src('src/**/*.ts')
-  .pipe(tsc.createProject('tsconfig.json', {
-    module: 'es2015'
-  })())
-  .on('error', err => {
-    process.exit(1);
-  })
-  .pipe(gulp.dest('es'))
-);
 
 gulp.task('build:lib', () =>
   gulp.src('src/**/*.ts')
@@ -53,7 +41,6 @@ gulp.task('build:test', () =>
 );
 
 gulp.task('build', gulp.series(
-  'build:es',
   'build:lib',
   'build:src',
   'build:test'
