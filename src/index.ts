@@ -202,7 +202,7 @@ export function createEventProxy({
   tags = [],
   data = {}
 }: CreateEventProxyOptions): EventProxy {
-  const emitters = Array.prototype.concat(emitter);
+  const emitters = ([] as EventEmitter[]).concat(emitter);
 
   const proxy = newProxy({
     emitters,
