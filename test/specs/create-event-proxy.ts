@@ -10,12 +10,22 @@ import {
 import { createEventProxy, Event, EventProxy, interfaces } from '../../src';
 
 describe('createEventProxy()', () => {
+  let emitter: EventEmitter;
+
+  const createEvent = (options: {
+    [key: string]: any
+  } = {}): EventProxy =>
+    createEventProxy(Object.assign({
+      emitter,
+      name: 'event-name'
+    }, options));
+
   const emitEvent = (eventProxy: EventProxy, ...eventArguments: any[]) =>
     new Promise<{
       event: Event,
       tags: interfaces.StringKeyedObject<boolean>
     }>((resolve, reject) => {
-      this.emitter
+      emitter
         .on('error', reject)
         .on('event-name', (
           event: Event,
@@ -30,23 +40,13 @@ describe('createEventProxy()', () => {
     }
   );
 
-  before(() => {
-    this.createEventProxy = (options: {
-      [key: string]: any
-    } = {}): EventProxy =>
-      createEventProxy(Object.assign({
-        emitter: this.emitter,
-        name: 'event-name'
-      }, options));
-  });
-
   beforeEach(() => {
-    this.emitter = new EventEmitter();
+    emitter = new EventEmitter();
   });
 
   it('creates a function which when called emits the normalized event along \
 with the tags array converted to a <tag>:true hash object', async () => {
-    const eventProxy = this.createEventProxy();
+    const eventProxy = createEvent();
 
     const {
       event,
@@ -61,7 +61,7 @@ with the tags array converted to a <tag>:true hash object', async () => {
   });
 
   it('emits empty hash object when no tags are passed', async () => {
-    const eventProxy = this.createEventProxy();
+    const eventProxy = createEvent();
 
     const {
       event,
@@ -75,7 +75,7 @@ with the tags array converted to a <tag>:true hash object', async () => {
 
   it('can be configured with default data that is merged with provided data',
     async () => {
-    const eventProxy = this.createEventProxy({
+    const eventProxy = createEvent({
       data: {
         a: 'b'
       }
@@ -93,7 +93,7 @@ with the tags array converted to a <tag>:true hash object', async () => {
   });
 
   it('provided data replaces default data when merging conflicts', async () => {
-    const eventProxy = this.createEventProxy({
+    const eventProxy = createEvent({
       data: {
         a: 'b'
       }
@@ -110,7 +110,7 @@ with the tags array converted to a <tag>:true hash object', async () => {
   });
 
   it('deep merges default and provided data', async () => {
-    const eventProxy = this.createEventProxy({
+    const eventProxy = createEvent({
       data: {
         a: {
           b: {
@@ -146,7 +146,7 @@ with the tags array converted to a <tag>:true hash object', async () => {
 
   it('can be configured with default tags that are merged with provided tags',
     async () => {
-    const eventProxy = this.createEventProxy({
+    const eventProxy = createEvent({
       tags: ['a']
     });
 
@@ -159,7 +159,7 @@ with the tags array converted to a <tag>:true hash object', async () => {
   });
 
   it('duplicate and empty string tags are removed', async () => {
-    const eventProxy = this.createEventProxy({
+    const eventProxy = createEvent({
       tags: ['a', 'a', '']
     });
 
@@ -173,7 +173,7 @@ with the tags array converted to a <tag>:true hash object', async () => {
 
   it('can create child event proxies that \'inherit\' default data and tags \
 from parent', async () => {
-    const eventProxy = this.createEventProxy({
+    const eventProxy = createEvent({
       data: {
         a: 'b'
       },
@@ -193,7 +193,7 @@ from parent', async () => {
 
   it('child event proxies data and tags are merged with parent\'s data and \
 tags', async () => {
-    const eventProxy = this.createEventProxy({
+    const eventProxy = createEvent({
       data: {
         a: 'b'
       },
@@ -221,7 +221,7 @@ tags', async () => {
   });
 
   it('parent and child are independent event proxies', async () => {
-    const parentEventProxy = this.createEventProxy({
+    const parentEventProxy = createEvent({
       tags: ['a']
     });
     const childEventProxy = parentEventProxy.child({
@@ -232,7 +232,7 @@ tags', async () => {
   });
 
   it('child event proxies can also create childs', async () => {
-    const eventProxy = this.createEventProxy({
+    const eventProxy = createEvent({
       tags: ['a']
     }).child({
       tags: ['b']
@@ -249,7 +249,7 @@ tags', async () => {
   });
 
   it('errors in the sync/async data function are emitted', async () => {
-    const eventProxy = this.createEventProxy();
+    const eventProxy = createEvent();
 
     const err = await new Promise(async (resolve, reject) => {
       try {
@@ -266,7 +266,7 @@ tags', async () => {
   });
 
   it('default tags and data are exposed and can be modified', async () => {
-    const eventProxy = this.createEventProxy({
+    const eventProxy = createEvent({
       tags: ['a'],
       data: {
         a: 'b'
@@ -291,7 +291,7 @@ tags', async () => {
   });
 
   it('accepts empty arguments', async () => {
-    const eventProxy = this.createEventProxy();
+    const eventProxy = createEvent();
 
     const {
       event

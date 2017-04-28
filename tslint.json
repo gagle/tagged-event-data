@@ -9,6 +9,7 @@
     "max-line-length": [true, 80],
     "no-conditional-assignment": [false],
     "no-console": true,
+    "no-require-imports": true,
     "no-var-requires": false,
     "object-literal-key-quotes": [true, "as-needed"],
     "object-literal-sort-keys": false,

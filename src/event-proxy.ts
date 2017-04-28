@@ -21,15 +21,15 @@ export interface CreateEventProxyOptions {
 interface NewProxyOptions {
   emitters: EventEmitter[];
   name: string;
-  defaultTags?: string[];
-  defaultData?: StringKeyedObject<any>;
+  defaultTags: string[];
+  defaultData: StringKeyedObject<any>;
 }
 
 interface NewChildOptions {
   emitters: EventEmitter[];
   name: string;
-  parentTags?: string[];
-  parentData?: StringKeyedObject<any>;
+  parentTags: string[];
+  parentData: StringKeyedObject<any>;
 }
 
 export interface EventProxyChildOptions {
@@ -49,22 +49,22 @@ export interface EventProxy {
     message?: EventMessage, timestamp?: EventTimestamp): void;
   tags: string[];
   data: StringKeyedObject<any>;
-  child: (options: EventProxyChildOptions) => EventProxy;
+  child: (options?: EventProxyChildOptions) => EventProxy;
 }
 
 export async function normalizeEvent(error?: EventError, tags?: EventTags,
   data?: EventData, message?: EventMessage, timestamp?: EventTimestamp)
   : Promise<Event> {
   const args = [...arguments];
-  const defaultError: Error = null;
   const defaultTags: string[] = [];
   const defaultData: StringKeyedObject<any> = {};
   const defaultMessage = '';
   const defaultTimestamp = new Date();
 
-  const argsUndefined = args.filter((arg: any) => arg !== undefined);
+  const emptyArgs = args.filter((arg: any) => arg !== undefined &&
+    arg !== null);
 
-  if (!argsUndefined.length) {
+  if (!emptyArgs.length) {
     return {
       tags: defaultTags,
       data: defaultData,
@@ -83,8 +83,7 @@ export async function normalizeEvent(error?: EventError, tags?: EventTags,
 
   if (typeof args[0] === 'function') {
     data = await promisify(args.shift())();
-  } else if (typeof args[0] === 'object' && !(args[0] instanceof Date) ||
-    args[0] === null) {
+  } else if (typeof args[0] === 'object' && !(args[0] instanceof Date)) {
     data = args.shift();
   }
 
@@ -114,15 +113,13 @@ export async function normalizeEvent(error?: EventError, tags?: EventTags,
     error = new Error(`unexpected argument: ${unexpectedArg}`);
   }
 
-  if (!(error instanceof Error)) {
-    error = defaultError;
-  }
+  const isError = error instanceof Error;
 
   if (!Array.isArray(tags)) {
     tags = defaultTags;
   }
 
-  if (data !== null && typeof data !== 'function' &&
+  if (typeof data !== 'function' &&
     (typeof data !== 'object' || data instanceof Date)) {
     data = defaultData;
   }
@@ -142,7 +139,7 @@ export async function normalizeEvent(error?: EventError, tags?: EventTags,
     timestamp
   } as Event;
 
-  if (error) {
+  if (isError) {
     event.error = error as Error;
   }
 
@@ -198,7 +195,7 @@ export function createEventProxy({
   tags = [],
   data = {}
 }: CreateEventProxyOptions): EventProxy {
-  const emitters = [].concat(emitter);
+  const emitters = Array.prototype.concat(emitter);
 
   const proxy = newProxy({
     emitters,

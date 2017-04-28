@@ -22,8 +22,19 @@ describe('normalizeEvent()', () => {
     expect(promise).to.be.a('promise');
   });
 
-  it('accepts empty arguments', async () => {
+  it('no empty parameters', async () => {
     const event = await normalizeEvent();
+
+    assertEventSchema(event);
+    assertDefaultTags(event);
+    assertDefaultData(event);
+    assertDefaultMessage(event);
+    assertDefaultTimestamp(event);
+  });
+
+  it('no parameter can be null (typeof null is broken)', async () => {
+    // ts disallows null as object
+    const event = await normalizeEvent.apply(null, Array(5).fill(null));
 
     assertEventSchema(event);
     assertDefaultTags(event);
@@ -216,16 +227,6 @@ describe('normalizeEvent()', () => {
     assertErrorSchema(event);
     assertDefaultTags(event);
     assertDefaultData(event);
-    assertDefaultMessage(event);
-    assertDefaultTimestamp(event);
-  });
-
-  it('data type can be also null', async () => {
-    const event = await normalizeEvent(null);
-
-    assertEventSchema(event);
-    assertDefaultTags(event);
-    expect(event.data).to.be.null;
     assertDefaultMessage(event);
     assertDefaultTimestamp(event);
   });
