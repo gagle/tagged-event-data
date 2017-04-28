@@ -7,7 +7,12 @@ import {
   assertDefaultMessage,
   assertDefaultTimestamp
 } from '../utils/defaults';
-import { createEventProxy, Event, EventProxy, interfaces } from '../../src';
+import {
+  createEventProxy,
+  Event,
+  EventProxy,
+  EventTagsMap
+} from '../../src';
 
 describe('createEventProxy()', () => {
   let emitter: EventEmitter;
@@ -23,13 +28,13 @@ describe('createEventProxy()', () => {
   const emitEvent = (eventProxy: EventProxy, ...eventArguments: any[]) =>
     new Promise<{
       event: Event,
-      tags: interfaces.StringKeyedObject<boolean>
+      tags: EventTagsMap
     }>((resolve, reject) => {
       emitter
         .on('error', reject)
         .on('event-name', (
           event: Event,
-          tags: interfaces.StringKeyedObject<boolean>
+          tags: EventTagsMap
         ) => {
           resolve({
             event,
@@ -256,7 +261,7 @@ tags', async () => {
         await emitEvent(eventProxy, () => {
           throw new Error();
         });
-        reject(new Error('should fail with an error'));
+        reject(new Error('should throw an error'));
       } catch (err) {
         resolve(err);
       }
@@ -316,13 +321,13 @@ tags', async () => {
     const promises = [
       new Promise<{
         event: Event,
-        tags: interfaces.StringKeyedObject<boolean>
+        tags: EventTagsMap
       }>((resolve, reject) => {
         emitter1
           .on('error', reject)
           .on('event-name', (
             event: Event,
-            tags: interfaces.StringKeyedObject<boolean>
+            tags: EventTagsMap
           ) => {
             resolve({
               event,
@@ -332,13 +337,13 @@ tags', async () => {
       }),
       new Promise<{
         event: Event,
-        tags: interfaces.StringKeyedObject<boolean>
+        tags: EventTagsMap
       }>((resolve, reject) => {
         emitter2
           .on('error', reject)
           .on('event-name', (
             event: Event,
-            tags: interfaces.StringKeyedObject<boolean>
+            tags: EventTagsMap
           ) => {
             resolve({
               event,
@@ -372,9 +377,9 @@ tags', async () => {
           })
           .on('event-name', (
             event: Event,
-            tags: interfaces.StringKeyedObject<boolean>
+            tags: EventTagsMap
           ) => {
-            reject(new Error('should fail with an error'));
+            reject(new Error('should throw an error'));
           });
       }),
       new Promise<Error>((resolve, reject) => {
@@ -384,9 +389,9 @@ tags', async () => {
           })
           .on('event-name', (
             event: Event,
-            tags: interfaces.StringKeyedObject<boolean>
+            tags: EventTagsMap
           ) => {
-            reject(new Error('should fail with an error'));
+            reject(new Error('should throw an error'));
           });
       })
     ];

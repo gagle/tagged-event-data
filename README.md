@@ -6,7 +6,7 @@
 [![npm](https://img.shields.io/npm/dm/tagged-event-proxy.svg)](https://www.npmjs.com/package/tagged-event-proxy)
 
 ```bash
-$ npm install tagged-event-proxy 
+$ npm install tagged-event-proxy
 ```
 
 At some point an app needs to generate events. With this module you can emit events with a consistent json schema to consume them easily using a flexible function signature that can adapt to your needs. With the ability to add metadata to the event, we ensure that the event is always fully-descriptive.

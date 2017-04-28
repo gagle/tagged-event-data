@@ -260,7 +260,7 @@ describe('normalizeEvent()', () => {
          await normalizeEvent(() => {
           throw new Error();
         });
-        reject(new Error('should fail with an error'));
+        reject(new Error('should throw an error'));
       } catch (err) {
         resolve(err);
       }
@@ -273,7 +273,7 @@ describe('normalizeEvent()', () => {
         await normalizeEvent(async () => {
           throw new Error();
         });
-        reject(new Error('should fail with an error'));
+        reject(new Error('should throw an error'));
       } catch (err) {
         resolve(err);
       }
