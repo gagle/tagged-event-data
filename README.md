@@ -15,7 +15,7 @@ A logging system may be implemented on top of this utility, like [Hapi event log
 
 ```typescript
 import { EventEmitter } from 'events';
-import { createEventProxy, Event, interfaces } from 'tagged-event-proxy';
+import { createEventProxy, Event, EventTagsMap } from 'tagged-event-proxy';
 
 const emitter = new EventEmitter();
 const newEvent = createEventProxy({
@@ -28,7 +28,7 @@ const newEvent = createEventProxy({
 });
 
 emitter.on('log',
-  (event: Event, tags: interfaces.StringKeyedObject<boolean>) => {
+  (event: Event, tags: EventTagsMap) => {
   console.log(event);
   /*
   { tags: [ 'test', 'info' ],
@@ -62,7 +62,7 @@ interface CreateEventProxyOptions {
   emitter: EventEmitter | EventEmitter[];
   name: string;
   tags?: string[];
-  data?: StringKeyedObject<any>;
+  data?: EventDataMap;
 }
 ```
 
@@ -71,22 +71,22 @@ Returns a function that is able to emit events. Child event emitters can be crea
 ```typeScript
 interface EventProxyChildOptions {
   tags?: string[];
-  data?: StringKeyedObject<any>;
+  data?: EventDataMap;
 }
 
 type EventError = Error | EventTags;
 type EventTags = string[] | EventData;
-type EventData = Error | StringKeyedObject<any> |
-  (() => Promise<StringKeyedObject<any>>) | EventMessage;
+type EventData = EventDataMap | (() => Promise<EventDataMap>) |
+  EventMessage;
 type EventMessage = string | EventTimestamp;
 type EventTimestamp = Date;
 
 interface EventProxy {
-  (tags: EventTags, data?: EventData, message?: EventMessage,
-    timestamp?: EventTimestamp): void;
+  (error?: EventError, tags?: EventTags, data?: EventData,
+    message?: EventMessage, timestamp?: EventTimestamp): void;
   tags: string[];
-  data: StringKeyedObject<any>;
-  child: (options: EventProxyChildOptions) => EventProxy;
+  data: EventDataMap;
+  child: (options?: EventProxyChildOptions) => EventProxy;
 }
 ```
 
