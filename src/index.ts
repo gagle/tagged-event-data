@@ -117,7 +117,7 @@ export async function normalizeEvent(error?: EventError, tags?: EventTags,
     //
     // Let's store this unexpected data in the 'error' field.
     const unexpectedArg = args.shift();
-    error = new Error(`unexpected argument: ${unexpectedArg}`);
+    error = new Error(`unexpected parameter type: ${unexpectedArg}`);
   }
 
   const isError = error instanceof Error;
