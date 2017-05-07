@@ -220,7 +220,7 @@ try {
   message: '',
   timestamp: 2017-04-25T12:51:37.043Z,
   error:
-   Error: unexpected argument: 123
+   Error: unexpected parameter type: 123
        at Object.<anonymous> ...
        ... }
   */
