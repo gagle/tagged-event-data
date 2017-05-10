@@ -9,7 +9,7 @@
 $ npm install tagged-event-proxy
 ```
 
-At some point an app needs to generate events. With this module you can emit events with a consistent json schema to consume them easily using a flexible function signature that can adapt to your needs. With the ability to add metadata to the event, we ensure that the event is always fully-descriptive.
+At some point an app needs to generate events. With this module you can emit events with a consistent json schema to consume them easily using a flexible function signature that can adapt to your needs. With the ability to add metadata to the event the event is always fully-descriptive.
 
 A logging system may be implemented on top of this utility, like [Hapi event logs](https://hapijs.com/tutorials/logging). Tagged events are far more expressive, standard and useful than simple log lines.
 
@@ -46,7 +46,7 @@ emitter.on('log',
 newEvent(['info'], 'hello world');
 ```
 
-The reason why the event proxy does not inherit from an `EventEmitter` is to ease the event forwarding to a single `EventEmitter`, you decide where you want to attach the event proxy. Typically you have multiple event origins, for instance server events and request-specific events. Maybe you want to send metrics to a backend or you want to track any kind of business event. By decoupling the emission of the events you can create a single `EventEmitter` that will receive all kind of events, you can centralize all your application events.
+The reason why the event proxy does not inherit from an `EventEmitter` is to ease the event forwarding to a single `EventEmitter`, you decide where you want to attach the event proxy. Typically you have multiple event origins, for instance server events and request-specific events. Maybe you want to send metrics or you want to track any kind of business event. By decoupling the emission of the events you can create a single `EventEmitter` that will receive all kind of events, you can centralize all your application events.
 
 ### createEventProxy(options: CreateEventProxyOptions): EventProxy
 
